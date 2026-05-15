@@ -1,0 +1,676 @@
+  @page { size: A4; margin: 9mm 0 9mm 0; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  html {
+    /* Propagated to canvas (includes @page margin areas). Combined with
+       the .page-band element below, this is the belt-and-suspenders for
+       painting navy through every page break in print. */
+    background: linear-gradient(to right,
+      #0F2C4D 0,
+      #0F2C4D 72mm,
+      #ffffff 72mm,
+      #ffffff 100%);
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  /* Fixed strip Chrome re-paints on every printed page. The negative
+     offsets extend it INTO the @page top/bottom margin areas so the
+     navy column reaches the paper edges without seams. */
+  .page-band {
+    position: fixed;
+    top: -10mm; bottom: -10mm; left: 0; right: 0;
+    background: linear-gradient(to right,
+      #0F2C4D 0,
+      #0F2C4D 72mm,
+      #ffffff 72mm,
+      #ffffff 100%);
+    z-index: -1;
+    pointer-events: none;
+  }
+  :root {
+    --navy: #0F2C4D;
+    --navy-2: #163864;
+    --blue: #00A6FB;
+    --coral: #FF8A65;
+    --coral-soft: rgba(255,138,101,0.18);
+  }
+  body {
+    font-family: "Helvetica Neue", Helvetica, "Inter", "Montserrat", Arial, sans-serif;
+    font-size: 9pt;
+    line-height: 1.42;
+    color: #2d2d2d;
+    /* Body background = the navy/white stripe. With @page margin: 0,
+       this paints edge-to-edge on every printed page (Chrome propagates
+       body background to the canvas across all paginated pages). */
+    background: linear-gradient(to right,
+      #0F2C4D 0,
+      #0F2C4D 72mm,
+      #ffffff 72mm,
+      #ffffff 100%);
+    min-height: 100vh;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Single continuous grid — sidebar bleeds on every page */
+  .cv {
+    display: grid;
+    grid-template-columns: 72mm 1fr;
+  }
+
+  /* ============== SIDEBAR ============== */
+  .sidebar {
+    /* The solid navy band is painted by <html> so it extends through
+       the @page margin and past the end of content. We only add
+       decorative overlays here. */
+    background:
+      radial-gradient(circle at 100% 0%, rgba(0,166,251,0.10), transparent 38%),
+      radial-gradient(circle at 0% 100%, rgba(255,138,101,0.07), transparent 32%);
+    color: #e8eef5;
+    padding: 13mm 9mm 14mm 9mm;
+    position: relative;
+  }
+  /* Per-page breathing room — padding-top on items that may land at the
+     very top of a new page after a page break. */
+  .experience-item + .experience-item,
+  .project-item + .project-item { /* override below applies if first on page */ }
+  ol.pubs li + li { padding-top: 3mm; }
+  .sidebar::before {
+    content: "";
+    position: absolute;
+    top: 6mm; right: 6mm;
+    width: 4mm; height: 4mm;
+    background: var(--coral);
+    border-radius: 50%;
+    opacity: 0.85;
+  }
+  .sidebar::after {
+    content: "";
+    position: absolute;
+    top: 12mm; right: 12mm;
+    width: 2mm; height: 2mm;
+    background: var(--blue);
+    border-radius: 50%;
+  }
+
+  .photo-wrap {
+    position: relative;
+    width: 48mm;
+    height: 48mm;
+    margin: 0 auto 4.5mm auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .photo-wrap::before {
+    content: "";
+    position: absolute;
+    left: 0; bottom: 0;
+    width: 16mm; height: 16mm;
+    background: var(--coral);
+    border-radius: 50%;
+    opacity: 0.85;
+    z-index: 0;
+  }
+  .photo-wrap::after {
+    content: "";
+    position: absolute;
+    top: 1mm; right: 1mm;
+    width: 7mm; height: 7mm;
+    border: 1.5pt solid var(--blue);
+    border-radius: 50%;
+    z-index: 0;
+  }
+  .photo {
+    position: relative;
+    z-index: 1;
+    width: 42mm;
+    height: 42mm;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2pt solid #00A6FB;
+    box-shadow: 0 0 0 4pt rgba(0,166,251,0.18);
+    display: block;
+  }
+
+  .greeting {
+    text-align: center;
+    font-size: 8pt;
+    font-style: italic;
+    color: #b8c5d6;
+    margin: 0 0 0.8mm 0;
+    letter-spacing: 0.2px;
+  }
+  .greeting .wave { color: var(--coral); font-style: normal; margin-right: 1mm; }
+  .name {
+    font-size: 17pt;
+    font-weight: 700;
+    line-height: 1.1;
+    color: #ffffff;
+    margin: 0 0 1.8mm 0;
+    letter-spacing: 0.1px;
+    text-align: center;
+  }
+  .name .accent { color: var(--blue); }
+  .role {
+    font-size: 10pt;
+    color: #00A6FB;
+    font-weight: 600;
+    margin: 0 0 1mm 0;
+    text-align: center;
+    letter-spacing: 0.4px;
+  }
+  .subrole {
+    font-size: 8pt;
+    color: #b8c5d6;
+    margin: 0 0 3.2mm 0;
+    text-align: center;
+    font-style: italic;
+  }
+  .status-pill {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5mm;
+    margin: 0 auto 6mm auto;
+    padding: 1.2mm 3mm;
+    width: max-content;
+    max-width: 100%;
+    background: rgba(255,138,101,0.14);
+    border: 0.4pt solid rgba(255,138,101,0.55);
+    border-radius: 999px;
+    font-size: 7.2pt;
+    color: #ffd9c9;
+    letter-spacing: 0.2px;
+  }
+  .status-pill .dot {
+    width: 1.6mm; height: 1.6mm;
+    background: var(--coral);
+    border-radius: 50%;
+    box-shadow: 0 0 0 0.8mm rgba(255,138,101,0.25);
+  }
+  .tagline {
+    text-align: center;
+    font-size: 7.4pt;
+    color: #d8e0ec;
+    font-style: italic;
+    line-height: 1.4;
+    margin: -3.5mm 0 5mm 0;
+    padding: 0 1mm;
+  }
+  .tagline::before, .tagline::after { content: "\201C"; color: var(--coral); font-weight: 700; font-style: normal; }
+  .tagline::after { content: "\201D"; }
+
+  .s-section { margin-bottom: 5mm; page-break-inside: avoid; break-inside: avoid; }
+  .s-h {
+    display: flex;
+    align-items: center;
+    gap: 2mm;
+    font-size: 8.5pt;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    font-weight: 700;
+    color: #ffffff;
+    border-bottom: 0.6pt solid #00A6FB;
+    padding-bottom: 1.2mm;
+    margin: 0 0 2.4mm 0;
+  }
+  .s-h::before {
+    content: "";
+    width: 2mm; height: 2mm;
+    background: var(--coral);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .contact { list-style: none; padding: 0; margin: 0; }
+  .contact li {
+    margin-bottom: 1.4mm;
+  }
+  .contact a {
+    display: flex;
+    align-items: flex-start;
+    gap: 2mm;
+    font-size: 7.8pt;
+    color: #d8e0ec;
+    word-break: break-word;
+    text-decoration: none;
+  }
+  .contact a:hover { color: #ffffff; }
+  .contact a svg {
+    flex-shrink: 0;
+    margin-top: 0.4mm;
+    color: #00A6FB;
+  }
+
+  .tag-group { margin-bottom: 2mm; }
+  .tag-group-label {
+    font-size: 7pt;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #00A6FB;
+    margin-bottom: 1mm;
+    font-weight: 600;
+  }
+  .tags { display: flex; flex-wrap: wrap; gap: 1.2mm; }
+  .tag {
+    display: inline-block;
+    font-size: 7pt;
+    background: rgba(0,166,251,0.15);
+    border: 0.4pt solid rgba(0,166,251,0.55);
+    color: #e8eef5;
+    border-radius: 999px;
+    padding: 0.6mm 2mm;
+    line-height: 1.25;
+  }
+
+  .s-block { font-size: 7.9pt; color: #d8e0ec; text-align: justify; }
+  .s-block .item { margin-bottom: 2.4mm; }
+  .s-block .item:last-child { margin-bottom: 0; }
+  .s-block .title-line {
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 8pt;
+    line-height: 1.3;
+  }
+  .s-block .meta {
+    color: #00A6FB;
+    font-size: 7.2pt;
+    font-weight: 600;
+    margin-top: 0.3mm;
+  }
+  .s-block .note {
+    color: #b8c5d6;
+    font-size: 7.4pt;
+    line-height: 1.35;
+    margin-top: 0.4mm;
+    text-align: justify;
+  }
+
+  .stats { list-style: none; padding: 0; margin: 0; }
+  .stats li {
+    font-size: 7.8pt;
+    color: #d8e0ec;
+    padding: 1.2mm 0;
+    border-bottom: 0.3pt solid rgba(255,255,255,0.08);
+    display: flex;
+    align-items: baseline;
+    gap: 1.5mm;
+  }
+  .stats li:last-child { border-bottom: 0; }
+  .stats .n {
+    color: var(--coral);
+    font-weight: 700;
+    font-size: 13pt;
+    line-height: 1;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    min-width: 9mm;
+  }
+
+  .langs { list-style: none; padding: 0; margin: 0; }
+  .langs li {
+    display: flex;
+    justify-content: space-between;
+    font-size: 7.8pt;
+    color: #d8e0ec;
+    margin-bottom: 1mm;
+  }
+  .langs li b { color: #ffffff; font-weight: 600; }
+  .langs li span { color: #b8c5d6; font-size: 7.2pt; }
+
+  /* ============== MAIN ============== */
+  .main {
+    padding: 14mm 12mm 14mm 12mm;
+    background: #ffffff;
+  }
+
+  .m-section { margin-bottom: 6mm; padding-top: 1mm; }
+  .m-h {
+    display: flex;
+    align-items: center;
+    gap: 3mm;
+    font-size: 11pt;
+    text-transform: uppercase;
+    letter-spacing: 1.8px;
+    font-weight: 700;
+    color: #0F2C4D;
+    border-bottom: 1pt solid #00A6FB;
+    padding-bottom: 1.6mm;
+    margin: 0 0 3.4mm 0;
+    /* Keep section heading with its first item: if the next .project-item /
+       .experience-item would get pushed to the next page (page-break-inside:
+       avoid), pull the heading along with it instead of leaving it stranded. */
+    page-break-after: avoid;
+    break-after: avoid-page;
+  }
+  .m-h .num {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 9pt;
+    font-weight: 700;
+    color: var(--coral);
+    letter-spacing: 1px;
+    background: rgba(255,138,101,0.12);
+    border: 0.5pt solid rgba(255,138,101,0.45);
+    border-radius: 999px;
+    padding: 0.5mm 2mm;
+    line-height: 1.2;
+    flex-shrink: 0;
+  }
+  .m-h .dash {
+    flex: 1;
+    height: 0;
+    border-bottom: 0.4pt dashed rgba(0,166,251,0.35);
+  }
+
+  .summary {
+    font-size: 9.2pt;
+    line-height: 1.55;
+    color: #3a3a3a;
+    text-align: justify;
+    border-left: 1.5pt solid var(--coral);
+    padding-left: 4mm;
+    margin-left: 0.5mm;
+  }
+  .summary .lead {
+    color: var(--navy);
+    font-weight: 600;
+  }
+
+  /* Experience */
+  .experience-item, .project-item, .edu-item, .pub-item {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    margin-bottom: 6mm;
+  }
+  .experience-item:last-child, .project-item:last-child { margin-bottom: 0; }
+
+  /* Separator between companies in Professional Experience */
+  .experience-item + .experience-item {
+    margin-top: 2mm;
+    padding-top: 6mm;
+    position: relative;
+  }
+  .experience-item + .experience-item::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 0;
+    border-top: 0.5pt dashed rgba(15,44,77,0.25);
+  }
+  .experience-item + .experience-item::after {
+    content: "◆";
+    position: absolute;
+    top: -2mm;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--coral);
+    background: #ffffff;
+    font-size: 7pt;
+    padding: 0 2mm;
+    line-height: 1;
+  }
+
+  /* Separator between projects */
+  .project-item + .project-item {
+    margin-top: 2mm;
+    padding-top: 5mm;
+    position: relative;
+  }
+  .project-item + .project-item::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 0;
+    border-top: 0.4pt dashed rgba(15,44,77,0.18);
+  }
+
+  .exp-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4mm;
+    margin-bottom: 0.6mm;
+    padding: 1.6mm 0 1.6mm 4mm;
+    border-left: 2pt solid var(--coral);
+    background: linear-gradient(to right, rgba(255,138,101,0.06), transparent 60%);
+  }
+  .exp-company {
+    display: flex;
+    align-items: center;
+    gap: 4mm;
+    font-size: 11pt;
+    font-weight: 700;
+    color: #0F2C4D;
+    letter-spacing: 0.1px;
+  }
+  .exp-meta {
+    font-size: 8pt;
+    color: #00A6FB;
+    font-weight: 600;
+    white-space: nowrap;
+    letter-spacing: 0.3px;
+  }
+  .exp-logo {
+    height: 8mm;
+    width: auto;
+    max-width: 18mm;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+  .gh-icon {
+    height: 3mm;
+    width: auto;
+    vertical-align: -0.4mm;
+    margin-right: 1.2mm;
+  }
+  .exp-sub {
+    font-size: 8.4pt;
+    color: #666;
+    font-style: italic;
+    margin: 0.4mm 0 2mm 4mm;
+  }
+
+  /* Roles inside an experience-item share a left rail so they
+     visually belong to the same company */
+  .role-block {
+    margin-top: 2.4mm;
+    margin-left: 4mm;
+    padding-left: 4mm;
+    border-left: 0.6pt solid rgba(0,166,251,0.35);
+    position: relative;
+  }
+  .role-block::before {
+    content: "";
+    position: absolute;
+    left: -1.1mm;
+    top: 2mm;
+    width: 2mm;
+    height: 2mm;
+    background: #ffffff;
+    border: 1pt solid var(--blue);
+    border-radius: 50%;
+  }
+  .role-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 4mm;
+    margin-bottom: 1mm;
+  }
+  .role-title {
+    font-size: 9.4pt;
+    font-weight: 600;
+    color: #0F2C4D;
+  }
+  .role-dates {
+    font-size: 7.8pt;
+    color: #00A6FB;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  ul.bullets {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  ul.bullets li {
+    position: relative;
+    padding-left: 4mm;
+    margin-bottom: 1.1mm;
+    font-size: 8.9pt;
+    color: #3a3a3a;
+    line-height: 1.45;
+  }
+  ul.bullets li::before {
+    content: "▸";
+    color: #00A6FB;
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-weight: 700;
+  }
+  ul.bullets li b { color: #0F2C4D; font-weight: 600; }
+
+  /* Projects */
+  .proj-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 4mm;
+    margin-bottom: 0.4mm;
+  }
+  .proj-title {
+    font-size: 10pt;
+    font-weight: 700;
+    color: #0F2C4D;
+  }
+  .proj-dates {
+    font-size: 7.8pt;
+    color: #00A6FB;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .proj-sub {
+    font-size: 8.3pt;
+    color: #666;
+    font-style: italic;
+    margin-bottom: 0.4mm;
+  }
+  .proj-code {
+    font-size: 7.4pt;
+    color: #888;
+    font-family: "SF Mono", "Menlo", Consolas, monospace;
+    margin-bottom: 1.6mm;
+  }
+  .proj-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.2mm;
+    margin-top: 1.6mm;
+  }
+  .proj-tags .tag {
+    background: rgba(15,44,77,0.07);
+    border: 0.4pt solid rgba(15,44,77,0.25);
+    color: #0F2C4D;
+    font-size: 7pt;
+  }
+
+  /* Publications */
+  ol.pubs {
+    list-style: none;
+    counter-reset: pub;
+    padding: 0;
+    margin: 0;
+  }
+  ol.pubs li {
+    counter-increment: pub;
+    position: relative;
+    padding-left: 7mm;
+    margin-bottom: 2.4mm;
+    font-size: 8.4pt;
+    line-height: 1.45;
+    color: #3a3a3a;
+    text-align: justify;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  ol.pubs li::before {
+    content: counter(pub);
+    position: absolute;
+    left: 0;
+    top: 0.2mm;
+    width: 5mm;
+    height: 5mm;
+    background: #0F2C4D;
+    color: #fff;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 5mm;
+    font-size: 7pt;
+    font-weight: 700;
+  }
+  ol.pubs b { color: #0F2C4D; font-weight: 600; }
+  ol.pubs i { color: #00A6FB; font-style: italic; font-weight: 500; }
+
+  /* Publications inside the sidebar — re-color for navy background and
+     compact for the 72mm column. */
+  /* The pubs block is intentionally long: allow it to span pages so it
+     starts right after the previous section instead of being pushed
+     whole. Individual <li> items still avoid mid-citation breaks via the
+     ol.pubs li rule above. */
+  .sidebar .s-section:has(> ol.pubs) {
+    page-break-inside: auto;
+    break-inside: auto;
+  }
+  .sidebar ol.pubs li {
+    font-size: 7.2pt;
+    line-height: 1.4;
+    color: #d8e0ec;
+    padding-left: 5.5mm;
+    margin-bottom: 1.8mm;
+  }
+  .sidebar ol.pubs li + li { padding-top: 0; }
+  .sidebar ol.pubs li::before {
+    width: 4mm;
+    height: 4mm;
+    line-height: 4mm;
+    font-size: 6.4pt;
+    background: #00A6FB;
+    color: #0F2C4D;
+  }
+  .sidebar ol.pubs b { color: #ffffff; font-weight: 600; }
+  .sidebar ol.pubs i { color: #00A6FB; }
+
+  /* Breathing room before a publication that may land at the top of a printed
+     page. Padding lives inside the <li> so it travels with the element across
+     page breaks (unlike <br> between siblings, which Chromium drops when the
+     break falls between two <li>s). The ::before badge is offset to stay
+     aligned with the citation text. */
+  .sidebar ol.pubs li.pub-group-break { padding-top: 4mm; }
+  .sidebar ol.pubs li.pub-group-break::before { top: 4.2mm; }
+
+  /* Beyond Work / interests */
+  .interests {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.2mm;
+  }
+  .interest {
+    display: inline-flex;
+    align-items: center;
+    gap: 1.2mm;
+    font-size: 7.3pt;
+    color: #e8eef5;
+    background: rgba(255,255,255,0.04);
+    border: 0.4pt solid rgba(255,255,255,0.12);
+    border-radius: 6px;
+    padding: 1mm 1.8mm;
+    line-height: 1.2;
+  }
+  .interest .ico {
+    color: var(--coral);
+    font-size: 8pt;
+    line-height: 1;
+  }
+
