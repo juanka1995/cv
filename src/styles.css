@@ -243,7 +243,17 @@
     color: #00A6FB;
   }
 
-  .tag-group { margin-bottom: 2mm; }
+  .tag-group { margin-bottom: 2mm; page-break-inside: avoid; break-inside: avoid; }
+  /* The tech stack is tall: allow it to split between tag groups (each group
+     stays whole) so it starts right after Contact on page 1. */
+  .sidebar .s-section:has(> .tag-group) {
+    page-break-inside: auto;
+    break-inside: auto;
+  }
+  .sidebar .s-section:has(> .tag-group) > .s-h {
+    page-break-after: avoid;
+    break-after: avoid-page;
+  }
   .tag-group-label {
     font-size: 7pt;
     text-transform: uppercase;
@@ -383,6 +393,22 @@
     margin-bottom: 6mm;
   }
   .experience-item:last-child, .project-item:last-child { margin-bottom: 0; }
+  /* Multi-role entries are long: let them split between roles instead of
+     being pushed whole (which leaves a big gap). Each .role-block stays
+     intact, and the company header stays with its first role. */
+  .experience-item:has(> .role-block + .role-block) {
+    page-break-inside: auto;
+    break-inside: auto;
+  }
+  .experience-item:has(> .role-block + .role-block) > .role-block {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .experience-item:has(> .role-block + .role-block) > .exp-head,
+  .experience-item:has(> .role-block + .role-block) > .exp-sub {
+    page-break-after: avoid;
+    break-after: avoid-page;
+  }
 
   /* Separator between companies in Professional Experience */
   .experience-item + .experience-item {
