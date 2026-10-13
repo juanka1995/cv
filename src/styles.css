@@ -62,10 +62,12 @@
   .sidebar {
     /* The solid navy band is painted by <html> so it extends through
        the @page margin and past the end of content. We only add
-       decorative overlays here. */
+       decorative overlays here. The sidebar spans every page, so overlays
+       sized in % scale with the whole CV; a glow anchored to its bottom
+       ends abruptly mid-page on the last page (two-tone navy). Keep only
+       a fixed-radius glow at the top, which stays within page 1. */
     background:
-      radial-gradient(circle at 100% 0%, rgba(0,166,251,0.10), transparent 38%),
-      radial-gradient(circle at 0% 100%, rgba(255,138,101,0.07), transparent 32%);
+      radial-gradient(circle 110mm at 100% 0%, rgba(0,166,251,0.10), transparent);
     color: #e8eef5;
     padding: 13mm 9mm 14mm 9mm;
     position: relative;
